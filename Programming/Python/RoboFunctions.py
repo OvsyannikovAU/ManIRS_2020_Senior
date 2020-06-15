@@ -1,4 +1,5 @@
 from math import pi
+import sys
 
 class ManRobot:
 	link1=0
@@ -16,7 +17,10 @@ class ManRobot:
 	client=0
 	simTime=0
 	cam_image=[]
+	disconnect=False
+	stopDisconnect=True
 	__simState=0
+	__oldSimState=0
 	
 	def __init__(self, cl):
 		self.client=cl
@@ -155,4 +159,11 @@ class ManRobot:
 			
 	def getSimState(self, msg):
 		if msg[0]:
+			self.__oldSimState=self.__simState
 			self.__simState=msg[1]
+		else:
+			self.__simState=0
+		if self.__simState==0 and self.__oldSimState>0:
+			self.disconnect=True
+			if self.stopDisconnect:
+				sys.exit()

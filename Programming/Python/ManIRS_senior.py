@@ -54,6 +54,8 @@ with b0RemoteApi.RemoteApiClient('b0RemoteApi_pythonClient','b0RemoteApi_manirs'
         #robot.setCameraResolution(resX, resY) #установить разрешение камеры робота
 
         #img=robot.cam_image
+
+        #robot.stopDisconnect=True #Параметр включает или отключает остановку программы при дисконеекте с симулятором
         time.time()
         
 	#See also:
@@ -66,8 +68,8 @@ with b0RemoteApi.RemoteApiClient('b0RemoteApi_pythonClient','b0RemoteApi_manirs'
         
     def simulationStepDone(msg):
         #бездействие
-        global step #выводим текущий шаг
-        print(step) #просто для демонстрации, можно отключить
+        #global step #выводим текущий шаг
+        #print(step) #просто для демонстрации, можно отключить
         global doNextStep #а это обязательный участок кода
         doNextStep=True   #для синхронизации с основным потоком ниже
 	
@@ -84,7 +86,7 @@ with b0RemoteApi.RemoteApiClient('b0RemoteApi_pythonClient','b0RemoteApi_manirs'
 	
     startTime=time.time()
     startStep=step
-    while robot.simTime<5: #крутить цикл 5 секунд с начала симуляции
+    while (not robot.disconnect) and robot.simTime<120: #крутить цикл 120 секунд с начала симуляции
         #варианты условий для выхода из цикла:
         #time.time()<startTime+5 #крутить 5 секунд саму программу
         #step-startStep<100 #крутить цикл 100 шагов симуляции
@@ -102,5 +104,8 @@ with b0RemoteApi.RemoteApiClient('b0RemoteApi_pythonClient','b0RemoteApi_manirs'
 	
     #End of simulation:
     cleanup()
-    client.simxStopSimulation(client.simxDefaultPublisher())
+    if not robot.disconnect:
+        client.simxStopSimulation(client.simxDefaultPublisher())
+    else:
+        print('Simulation was stoped and clien was disconnected!')
 	
