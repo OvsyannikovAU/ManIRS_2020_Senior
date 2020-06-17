@@ -122,7 +122,7 @@ class ManRobot:
 	def resetPID(self,link):
 		self.setPID(link, 0.1,0,0)
 	
-	def setMaxSpeed(self,link, speed):
+	def setMaxSpeed(self, link, speed):
 		args=[link, speed]
 		ret=self.client.simxCallScriptFunction('remoteResetDyn@ManIRS_senior_robot','sim.scripttype_customizationscript',args,self.client.simxServiceCall())
 		return ret
