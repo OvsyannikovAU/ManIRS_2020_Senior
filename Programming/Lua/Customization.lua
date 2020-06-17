@@ -133,11 +133,16 @@ function sysCall_beforeSimulation()
     -- Called just before simulation starts. See also sysCall_afterSimulation
 end
 
-function remoteResetDyn(links)
-    local ret=true
-    for i=1,#links,1 do
-        local res=sim.resetDynamicObject(links[i])
-        ret=ret and res
+function remoteResetDyn(args)
+	local lnk=args[1]
+    local spd=args[2]
+    JT=sim.getJointType(args[1])
+    joint=sim.getObjectName(args[1])
+    if JT>-1 then
+        if JT==sim.joint_revolute_subtype then spd=args[2]*math.pi/180 end
+        if JT==sim.joint_prismatic_subtype then spd=args[2]*0.001 end
     end
-	return ret
+    sim.setObjectFloatParameter(args[1], sim.jointfloatparam_upper_limit, spd)
+    local res=sim.resetDynamicObject(args[1])
+	return res
 end
